@@ -37,14 +37,15 @@ function LevelDots({ level }) {
 
 function Pill({ children, active, onClick }) {
   return (
-    <button onClick={onClick} style={{
-      padding: "7px 18px", borderRadius: "100px", border: "none",
+    <button onClick={onClick} className="pill" style={{
+      padding: "7px 16px", borderRadius: "100px", border: "none",
       background: active ? "#1a1a1a" : "transparent",
       color: active ? "#faf8f4" : "#7a7668",
       fontSize: "13px", fontFamily: "'DM Sans', sans-serif",
       cursor: "pointer", fontWeight: active ? 600 : 400,
       transition: "all 0.2s",
       outline: active ? "none" : "1px solid #d4d0c8",
+      whiteSpace: "nowrap", flexShrink: 0,
     }}>
       {children}
     </button>
@@ -69,6 +70,7 @@ export default function App() {
   const [orgTypeFilter, setOrgTypeFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
   const filteredPubs = PUBLICATIONS.filter(p =>
@@ -91,9 +93,15 @@ export default function App() {
     { key: "roadmaps", label: "Roadmaps" },
   ];
 
+  const navigate = (key) => {
+    setPage(key);
+    setSearchQuery("");
+    setMenuOpen(false);
+  };
+
   return (
     <div style={{
-      fontFamily: "'DM Sans', sans-serif", background: "#faf8f4", minHeight: "100vh",
+      fontFamily: "'DM Sans', sans-serif", background: "#faf8f4", minHeight: "100dvh",
       color: "#2a2822", opacity: mounted ? 1 : 0, transition: "opacity 0.6s ease",
     }}>
       <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -102,14 +110,11 @@ export default function App() {
       <header style={{
         position: "sticky", top: 0, zIndex: 100,
         background: "rgba(250,248,244,0.88)", backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
         borderBottom: "1px solid #e4e0d7",
       }}>
-        <div style={{
-          maxWidth: 1140, margin: "0 auto", padding: "0 36px",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          height: 60,
-        }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 6, cursor: "pointer" }} onClick={() => { setPage("about"); setSearchQuery(""); }}>
+        <div className="nav-container">
+          <div style={{ display: "flex", alignItems: "baseline", gap: 6, cursor: "pointer" }} onClick={() => navigate("about")}>
             <span style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 20, fontWeight: 700,
               color: "#1a1a1a", letterSpacing: "-0.02em",
@@ -117,9 +122,11 @@ export default function App() {
               Carbon Removal 101
             </span>
           </div>
-          <nav style={{ display: "flex", gap: 2, alignItems: "center" }}>
+
+          {/* Desktop nav */}
+          <nav className="desktop-nav">
             {navItems.map(item => (
-              <button key={item.key} onClick={() => { setPage(item.key); setSearchQuery(""); }} style={{
+              <button key={item.key} onClick={() => navigate(item.key)} className="nav-btn" style={{
                 padding: "7px 16px", background: page === item.key ? "#1a1a1a" : "none",
                 border: "none", borderRadius: 100,
                 fontFamily: "'DM Sans', sans-serif", fontSize: 14,
@@ -131,19 +138,54 @@ export default function App() {
               </button>
             ))}
           </nav>
+
+          {/* Mobile hamburger */}
+          <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
+            <span style={{
+              display: "block", width: 20, height: 2, background: "#1a1a1a",
+              borderRadius: 2, transition: "all 0.3s",
+              transform: menuOpen ? "rotate(45deg) translate(4px, 4px)" : "none",
+            }} />
+            <span style={{
+              display: "block", width: 20, height: 2, background: "#1a1a1a",
+              borderRadius: 2, transition: "all 0.3s", marginTop: 5,
+              opacity: menuOpen ? 0 : 1,
+            }} />
+            <span style={{
+              display: "block", width: 20, height: 2, background: "#1a1a1a",
+              borderRadius: 2, transition: "all 0.3s", marginTop: 5,
+              transform: menuOpen ? "rotate(-45deg) translate(4px, -4px)" : "none",
+            }} />
+          </button>
         </div>
+
+        {/* Mobile menu dropdown */}
+        {menuOpen && (
+          <div className="mobile-menu">
+            {navItems.map(item => (
+              <button key={item.key} onClick={() => navigate(item.key)} style={{
+                display: "block", width: "100%", padding: "14px 24px",
+                background: page === item.key ? "#f0ede6" : "transparent",
+                border: "none", textAlign: "left",
+                fontFamily: "'DM Sans', sans-serif", fontSize: 16,
+                color: page === item.key ? "#1a1a1a" : "#8a8577",
+                fontWeight: page === item.key ? 600 : 400,
+                cursor: "pointer", transition: "background 0.15s",
+              }}>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
-      <main style={{ maxWidth: 1140, margin: "0 auto", padding: "0 36px 100px" }}>
+      <main className="main-content">
 
         {/* ===== ABOUT ===== */}
         {page === "about" && (
           <div style={{ animation: "fadeUp 0.5s ease both" }}>
             {/* Hero */}
-            <div style={{
-              background: "#1a1a1a", borderRadius: 24, padding: "72px 60px",
-              marginTop: 32, position: "relative", overflow: "hidden",
-            }}>
+            <section className="hero">
               <div style={{
                 position: "absolute", top: -60, right: -40, width: 320, height: 320,
                 borderRadius: "50%", background: "radial-gradient(circle, #3b6b1e22 0%, transparent 70%)",
@@ -162,51 +204,36 @@ export default function App() {
                   <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#7cc75e" }} />
                   Open educational resource
                 </div>
-                <h1 style={{
-                  fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 56, fontWeight: 800,
-                  lineHeight: 1.05, margin: 0, color: "#fff", letterSpacing: "-0.03em",
-                }}>
+                <h1 className="hero-title">
                   A curated guide to carbon removal.
                 </h1>
-                <p style={{ fontSize: 17, lineHeight: 1.75, color: "#999", marginTop: 24, fontWeight: 300, maxWidth: 520 }}>
+                <p className="hero-subtitle">
                   The publications, organizations, and regional roadmaps you need to understand carbon dioxide removal — from beginner overviews to advanced research.
                 </p>
-                <div style={{ display: "flex", gap: 12, marginTop: 36 }}>
-                  <button onClick={() => setPage("publications")} style={{
-                    padding: "14px 32px", background: "#3b6b1e", color: "#fff",
-                    border: "none", borderRadius: 100, fontSize: 15,
-                    fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-                    cursor: "pointer", transition: "transform 0.15s",
-                  }}>
+                <div className="hero-buttons">
+                  <button onClick={() => navigate("publications")} className="btn-primary">
                     Explore resources
                   </button>
-                  <button onClick={() => window.open("https://forms.gle/Cf82fBWwGP6Swfyv9")} style={{
-                    padding: "14px 32px", background: "transparent", color: "#999",
-                    border: "1px solid rgba(255,255,255,0.15)", borderRadius: 100, fontSize: 15,
-                    fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-                    cursor: "pointer",
-                  }}>
+                  <button onClick={() => window.open("https://forms.gle/Cf82fBWwGP6Swfyv9")} className="btn-secondary">
                     Suggest a resource
                   </button>
                 </div>
               </div>
-            </div>
+            </section>
 
             {/* Stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginTop: 24 }}>
+            <div className="stats-grid">
               {[
                 { n: "40+", label: "Publications", sub: "books, reports & more" },
                 { n: "58", label: "Organizations", sub: "across 5 categories" },
                 { n: "8", label: "Roadmaps", sub: "regional strategies" },
                 { n: "6", label: "Topics", sub: "policy to investment" },
               ].map((s, i) => (
-                <div key={i} style={{
-                  background: "#fff", borderRadius: 16, padding: "28px 24px",
-                  border: "1px solid #e8e4dc",
-                }}>
+                <div key={i} className="stat-card">
                   <div style={{
                     fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 36, fontWeight: 800,
                     color: "#1a1a1a", letterSpacing: "-0.03em",
+                    fontVariantNumeric: "tabular-nums",
                   }}>{s.n}</div>
                   <div style={{ fontSize: 14, fontWeight: 600, color: "#2a2822", marginTop: 4 }}>{s.label}</div>
                   <div style={{ fontSize: 12, color: "#a09e94", marginTop: 2 }}>{s.sub}</div>
@@ -220,17 +247,10 @@ export default function App() {
                 fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 28, fontWeight: 700,
                 letterSpacing: "-0.02em", marginBottom: 20,
               }}>Browse by module</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+              <div className="modules-grid">
                 {["Overview","Science and innovation","Policy","Carbon markets","Community benefits","Investment"].map((t, i) => (
-                  <button key={t} onClick={() => { setTopicFilter(t); setPage("publications"); }}
-                    style={{
-                      padding: "28px 24px", background: "#fff", border: "1px solid #e8e4dc",
-                      borderRadius: 16, textAlign: "left", cursor: "pointer",
-                      fontFamily: "'DM Sans', sans-serif", transition: "all 0.2s",
-                      position: "relative", overflow: "hidden",
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = "#3b6b1e"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.06)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8e4dc"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+                  <button key={t} onClick={() => { setTopicFilter(t); navigate("publications"); }}
+                    className="module-card"
                   >
                     <div style={{
                       fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 48, fontWeight: 800,
@@ -241,7 +261,7 @@ export default function App() {
                       fontFamily: "'Plus Jakarta Sans', sans-serif",
                     }}>{t}</div>
                     <div style={{ fontSize: 13, color: "#a09e94", marginTop: 6, position: "relative" }}>
-                      {topicCounts[t]} resources →
+                      {topicCounts[t]} resources
                     </div>
                   </button>
                 ))}
@@ -254,10 +274,7 @@ export default function App() {
         {page === "publications" && (
           <div style={{ animation: "fadeUp 0.4s ease both" }}>
             <div style={{ paddingTop: 40, marginBottom: 24 }}>
-              <h1 style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 40, fontWeight: 800,
-                margin: 0, letterSpacing: "-0.03em",
-              }}>Publications</h1>
+              <h1 className="page-title">Publications</h1>
               <p style={{ color: "#8a8577", fontSize: 15, marginTop: 8 }}>
                 {filteredPubs.length} resources — books, reports, databases, and more.
               </p>
@@ -268,37 +285,24 @@ export default function App() {
               <input
                 type="text" placeholder="Search by title, author, or keyword..."
                 value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                style={{
-                  width: "100%", padding: "13px 18px", borderRadius: 12,
-                  border: "1px solid #e4e0d7", background: "#fff",
-                  fontSize: 14, fontFamily: "'DM Sans', sans-serif", color: "#2a2822",
-                  outline: "none", boxSizing: "border-box",
-                }}
+                className="search-input"
               />
             </div>
 
             {/* Topic filters */}
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
-              <span style={{ fontSize: 11, color: "#a09e94", alignSelf: "center", marginRight: 2, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Topic</span>
+            <div className="filter-row">
+              <span className="filter-label">Topic</span>
               {TOPICS.map(t => <Pill key={t} active={topicFilter === t} onClick={() => setTopicFilter(t)}>{t === "All" ? `All (${PUBLICATIONS.length})` : t}</Pill>)}
             </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 32 }}>
-              <span style={{ fontSize: 11, color: "#a09e94", alignSelf: "center", marginRight: 2, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Type</span>
+            <div className="filter-row" style={{ marginBottom: 32 }}>
+              <span className="filter-label">Type</span>
               {PUB_TYPES.map(t => <Pill key={t} active={typeFilter === t} onClick={() => setTypeFilter(t)}>{t}</Pill>)}
             </div>
 
             {/* Resource list */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {filteredPubs.map((p, i) => (
-                <a href={p.link} target="_blank" rel="noopener noreferrer" key={i} style={{
-                  background: "#fff", padding: "24px 28px", textDecoration: "none",
-                  borderRadius: 14, border: "1px solid #e8e4dc",
-                  display: "grid", gridTemplateColumns: "1fr 90px", gap: 20,
-                  cursor: "pointer", transition: "all 0.15s",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "#3b6b1e"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.05)"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8e4dc"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-                >
+                <a href={p.link} target="_blank" rel="noopener noreferrer" key={i} className="pub-card">
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
                       <TypeTag type={p.type} />
@@ -317,7 +321,7 @@ export default function App() {
                     <div style={{ fontSize: 14, color: "#6a6658", lineHeight: 1.6, fontWeight: 300 }}>{p.description}</div>
                     <div style={{ fontSize: 13, color: "#a09e94", marginTop: 8, fontWeight: 400 }}>{p.authors}</div>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "center", gap: 8, minWidth: 90 }}>
+                  <div className="pub-difficulty">
                     <div style={{ fontSize: 10, color: "#a09e94", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Difficulty</div>
                     <LevelDots level={p.level} />
                   </div>
@@ -336,10 +340,7 @@ export default function App() {
         {page === "organizations" && (
           <div style={{ animation: "fadeUp 0.4s ease both" }}>
             <div style={{ paddingTop: 40, marginBottom: 24 }}>
-              <h1 style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 40, fontWeight: 800,
-                margin: 0, letterSpacing: "-0.03em",
-              }}>Organizations</h1>
+              <h1 className="page-title">Organizations</h1>
               <p style={{ color: "#8a8577", fontSize: 15, marginTop: 8 }}>
                 {filteredOrgs.length} organizations — academic institutions, think tanks, trade associations, and coalitions.
               </p>
@@ -349,30 +350,18 @@ export default function App() {
               <input
                 type="text" placeholder="Search organizations..."
                 value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                style={{
-                  width: "100%", padding: "13px 18px", borderRadius: 12,
-                  border: "1px solid #e4e0d7", background: "#fff",
-                  fontSize: 14, fontFamily: "'DM Sans', sans-serif", color: "#2a2822",
-                  outline: "none", boxSizing: "border-box",
-                }}
+                className="search-input"
               />
             </div>
 
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
-              <span style={{ fontSize: 11, color: "#a09e94", alignSelf: "center", marginRight: 2, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Type</span>
+            <div className="filter-row" style={{ marginBottom: 28 }}>
+              <span className="filter-label">Type</span>
               {ORG_TYPES.map(t => <Pill key={t} active={orgTypeFilter === t} onClick={() => setOrgTypeFilter(t)}>{t}</Pill>)}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+            <div className="orgs-grid">
               {filteredOrgs.map((o, i) => (
-                <a href={o.link} target="_blank" rel="noopener noreferrer" key={i} style={{
-                  background: "#fff", border: "1px solid #e8e4dc", borderRadius: 14,
-                  padding: "22px 24px", textDecoration: "none", transition: "all 0.2s",
-                  cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "#3b6b1e"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.05)"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8e4dc"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-                >
+                <a href={o.link} target="_blank" rel="noopener noreferrer" key={i} className="org-card">
                   <div>
                     <div style={{
                       fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -395,10 +384,7 @@ export default function App() {
         {page === "roadmaps" && (
           <div style={{ animation: "fadeUp 0.4s ease both" }}>
             <div style={{ paddingTop: 40, marginBottom: 28 }}>
-              <h1 style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 40, fontWeight: 800,
-                margin: 0, letterSpacing: "-0.03em",
-              }}>Regional Roadmaps</h1>
+              <h1 className="page-title">Regional roadmaps</h1>
               <p style={{ color: "#8a8577", fontSize: 15, marginTop: 8 }}>
                 Country and region-specific strategies for scaling carbon removal.
               </p>
@@ -406,28 +392,18 @@ export default function App() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {ROADMAPS.map((r, i) => (
-                <a href={r.link} target="_blank" rel="noopener noreferrer" key={i} style={{
-                  background: "#fff", border: "1px solid #e8e4dc", borderRadius: 14,
-                  padding: "28px 32px", textDecoration: "none",
-                  display: "grid", gridTemplateColumns: "100px 1fr auto", gap: 24, alignItems: "center",
-                  transition: "all 0.2s", cursor: "pointer",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "#3b6b1e"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.05)"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8e4dc"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-                >
-                  <div style={{
-                    fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, fontWeight: 700,
-                    color: "#3b6b1e", background: "#e8f0e2", padding: "8px 0", borderRadius: 8,
-                    textAlign: "center", letterSpacing: "0.02em",
-                  }}>{r.geography}</div>
-                  <div>
+                <a href={r.link} target="_blank" rel="noopener noreferrer" key={i} className="roadmap-card">
+                  <div className="roadmap-geo">
+                    {r.geography}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
                     <div style={{
                       fontFamily: "'Plus Jakarta Sans', sans-serif",
                       fontSize: 17, fontWeight: 600, color: "#1a1a1a",
                     }}>{r.title}</div>
                     <div style={{ fontSize: 13, color: "#a09e94", marginTop: 4 }}>{r.org} · {r.year}</div>
                   </div>
-                  <span style={{ color: "#c4c0b8", fontSize: 20 }}>↗</span>
+                  <span className="roadmap-arrow">↗</span>
                 </a>
               ))}
             </div>
@@ -436,10 +412,7 @@ export default function App() {
       </main>
 
       {/* FOOTER */}
-      <footer style={{
-        borderTop: "1px solid #e8e4dc", padding: "28px 0",
-        maxWidth: 1140, margin: "0 auto", paddingLeft: 36, paddingRight: 36,
-      }}>
+      <footer className="site-footer">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <span style={{ fontSize: 13, color: "#a09e94" }}>
             <strong style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, color: "#6a6658" }}>Carbon Removal 101</strong> — An open educational resource
@@ -452,15 +425,249 @@ export default function App() {
       </footer>
 
       <style>{`
+        *, *::before, *::after { box-sizing: border-box; margin: 0; }
+        html { scroll-behavior: smooth; }
+
+        /* Focus states */
+        :focus-visible {
+          outline: 2px solid #3b6b1e;
+          outline-offset: 2px;
+        }
+        button:focus:not(:focus-visible), a:focus:not(:focus-visible) {
+          outline: none;
+        }
+
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        * { box-sizing: border-box; margin: 0; }
+
         input:focus { border-color: #3b6b1e !important; box-shadow: 0 0 0 3px rgba(59,107,30,0.08) !important; }
-        button:hover { opacity: 0.92; }
-        @media (max-width: 768px) {
-          main { padding-left: 20px !important; padding-right: 20px !important; }
+
+        /* NAV */
+        .nav-container {
+          max-width: 1140px; margin: 0 auto; padding: 0 36px;
+          display: flex; align-items: center; justify-content: space-between;
+          height: 60px;
+        }
+        .desktop-nav { display: flex; gap: 2px; align-items: center; }
+        .hamburger { display: none; background: none; border: none; padding: 8px; cursor: pointer; }
+        .mobile-menu { display: none; }
+        .nav-btn:active { transform: scale(0.96); }
+
+        /* MAIN */
+        .main-content { max-width: 1140px; margin: 0 auto; padding: 0 36px 100px; }
+
+        /* HERO */
+        .hero {
+          background: #1a1a1a; border-radius: 24px; padding: 72px 60px;
+          margin-top: 32px; position: relative; overflow: hidden;
+        }
+        .hero-title {
+          font-family: 'Plus Jakarta Sans', sans-serif; font-size: 56px; font-weight: 800;
+          line-height: 1.05; margin: 0; color: #fff; letter-spacing: -0.03em;
+          text-wrap: balance;
+        }
+        .hero-subtitle {
+          font-size: 17px; line-height: 1.75; color: #999; margin-top: 24px;
+          font-weight: 300; max-width: 520px;
+        }
+        .hero-buttons { display: flex; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
+        .btn-primary {
+          padding: 14px 32px; background: #3b6b1e; color: #fff;
+          border: none; border-radius: 100px; font-size: 15px;
+          font-family: 'DM Sans', sans-serif; font-weight: 600;
+          cursor: pointer; transition: transform 0.15s, background 0.2s;
+        }
+        .btn-primary:hover { background: #4a7d28; }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-secondary {
+          padding: 14px 32px; background: transparent; color: #999;
+          border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; font-size: 15px;
+          font-family: 'DM Sans', sans-serif; font-weight: 500;
+          cursor: pointer; transition: border-color 0.2s, color 0.2s;
+        }
+        .btn-secondary:hover { border-color: rgba(255,255,255,0.35); color: #ccc; }
+        .btn-secondary:active { transform: scale(0.97); }
+
+        /* STATS */
+        .stats-grid {
+          display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px;
+        }
+        .stat-card {
+          background: #fff; border-radius: 16px; padding: 28px 24px;
+          border: 1px solid #e8e4dc;
+        }
+
+        /* MODULES */
+        .modules-grid {
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+        }
+        .module-card {
+          padding: 28px 24px; background: #fff; border: 1px solid #e8e4dc;
+          border-radius: 16px; text-align: left; cursor: pointer;
+          font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+          position: relative; overflow: hidden;
+        }
+        .module-card:hover {
+          border-color: #3b6b1e; transform: translateY(-3px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+        .module-card:active { transform: translateY(-1px); }
+
+        /* PAGE TITLE */
+        .page-title {
+          font-family: 'Plus Jakarta Sans', sans-serif; font-size: 40px; font-weight: 800;
+          margin: 0; letter-spacing: -0.03em;
+        }
+
+        /* SEARCH */
+        .search-input {
+          width: 100%; padding: 13px 18px; border-radius: 12px;
+          border: 1px solid #e4e0d7; background: #fff;
+          font-size: 14px; font-family: 'DM Sans', sans-serif; color: #2a2822;
+          outline: none;
+        }
+
+        /* FILTERS */
+        .filter-row {
+          display: flex; gap: 8px; flex-wrap: nowrap; margin-bottom: 8px;
+          overflow-x: auto; -webkit-overflow-scrolling: touch;
+          scrollbar-width: none; padding-bottom: 4px;
+        }
+        .filter-row::-webkit-scrollbar { display: none; }
+        .filter-label {
+          font-size: 11px; color: #a09e94; align-self: center; margin-right: 2px;
+          text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;
+          flex-shrink: 0;
+        }
+
+        /* PUBLICATION CARDS */
+        .pub-card {
+          background: #fff; padding: 24px 28px; text-decoration: none;
+          border-radius: 14px; border: 1px solid #e8e4dc;
+          display: grid; grid-template-columns: 1fr 90px; gap: 20px;
+          cursor: pointer; transition: all 0.15s; color: inherit;
+        }
+        .pub-card:hover {
+          border-color: #3b6b1e; transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        }
+        .pub-card:active { transform: translateY(0); }
+        .pub-difficulty {
+          display: flex; flex-direction: column; align-items: flex-end;
+          justify-content: center; gap: 8px; min-width: 90px;
+        }
+
+        /* ORG CARDS */
+        .orgs-grid {
+          display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+        }
+        .org-card {
+          background: #fff; border: 1px solid #e8e4dc; border-radius: 14px;
+          padding: 22px 24px; text-decoration: none; transition: all 0.2s;
+          cursor: pointer; display: flex; justify-content: space-between;
+          align-items: flex-start; color: inherit;
+        }
+        .org-card:hover {
+          border-color: #3b6b1e; transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        }
+        .org-card:active { transform: translateY(0); }
+
+        /* ROADMAP CARDS */
+        .roadmap-card {
+          background: #fff; border: 1px solid #e8e4dc; border-radius: 14px;
+          padding: 28px 32px; text-decoration: none;
+          display: grid; grid-template-columns: 100px 1fr auto; gap: 24px;
+          align-items: center; transition: all 0.2s; cursor: pointer; color: inherit;
+        }
+        .roadmap-card:hover {
+          border-color: #3b6b1e; transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        }
+        .roadmap-card:active { transform: translateY(0); }
+        .roadmap-geo {
+          font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700;
+          color: #3b6b1e; background: #e8f0e2; padding: 8px 0; border-radius: 8px;
+          text-align: center; letter-spacing: 0.02em;
+        }
+        .roadmap-arrow { color: #c4c0b8; font-size: 20px; flex-shrink: 0; }
+
+        /* FOOTER */
+        .site-footer {
+          border-top: 1px solid #e8e4dc; padding: 28px 36px;
+          max-width: 1140px; margin: 0 auto;
+        }
+
+        /* PILL HOVER */
+        .pill:hover { opacity: 0.85; }
+        .pill:active { transform: scale(0.96); }
+
+        /* ===== TABLET ===== */
+        @media (max-width: 900px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr); }
+          .modules-grid { grid-template-columns: repeat(2, 1fr); }
+          .orgs-grid { grid-template-columns: 1fr; }
+          .hero { padding: 56px 40px; }
+          .hero-title { font-size: 44px; }
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 640px) {
+          .nav-container { padding: 0 20px; }
+          .desktop-nav { display: none; }
+          .hamburger { display: block; }
+          .mobile-menu {
+            display: flex; flex-direction: column;
+            border-top: 1px solid #e8e4dc;
+            padding: 8px 0;
+          }
+
+          .main-content { padding: 0 20px 80px; }
+          .site-footer { padding: 24px 20px; }
+
+          .hero { padding: 40px 24px; border-radius: 16px; margin-top: 20px; }
+          .hero-title { font-size: 32px; line-height: 1.1; }
+          .hero-subtitle { font-size: 15px; margin-top: 16px; }
+          .hero-buttons { margin-top: 28px; }
+          .btn-primary, .btn-secondary { padding: 12px 24px; font-size: 14px; width: 100%; text-align: center; }
+
+          .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
+          .stat-card { padding: 20px 16px; }
+          .stat-card > div:first-child { font-size: 28px !important; }
+
+          .modules-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          .module-card { padding: 20px 16px; }
+
+          .page-title { font-size: 28px; }
+
+          .search-input { font-size: 16px; padding: 12px 16px; }
+
+          .filter-row { gap: 6px; }
+
+          .pub-card {
+            grid-template-columns: 1fr; gap: 12px; padding: 20px;
+          }
+          .pub-difficulty {
+            flex-direction: row; align-items: center; justify-content: flex-start;
+            gap: 10px; min-width: 0;
+          }
+
+          .org-card { padding: 18px 20px; }
+
+          .roadmap-card {
+            grid-template-columns: 1fr; gap: 12px; padding: 20px;
+          }
+          .roadmap-geo { width: fit-content; padding: 6px 16px; }
+          .roadmap-arrow { display: none; }
+        }
+
+        /* ===== SMALL MOBILE ===== */
+        @media (max-width: 380px) {
+          .hero-title { font-size: 28px; }
+          .stats-grid { grid-template-columns: 1fr 1fr; }
+          .modules-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </div>
