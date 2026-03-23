@@ -531,9 +531,8 @@ export default function App() {
 
         /* FILTERS */
         .filter-row {
-          display: flex; gap: 8px; flex-wrap: nowrap; margin-bottom: 8px;
-          overflow-x: auto; -webkit-overflow-scrolling: touch;
-          scrollbar-width: none; padding-bottom: 4px;
+          display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+          padding: 2px 0;
         }
         .filter-row::-webkit-scrollbar { display: none; }
         .filter-label {
@@ -644,7 +643,12 @@ export default function App() {
 
           .search-input { font-size: 16px; padding: 12px 16px; }
 
-          .filter-row { gap: 6px; }
+          .filter-row {
+            gap: 6px; flex-wrap: nowrap; overflow-x: auto;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+            padding: 2px 0 6px;
+          }
+          .filter-row::-webkit-scrollbar { display: none; }
 
           .pub-card {
             grid-template-columns: 1fr; gap: 12px; padding: 20px;
