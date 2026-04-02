@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import useCompanyData, { CATEGORIES, CATEGORY_LABELS } from "./useCompanyData";
 
 const PUBLICATIONS = [{"topic":"Overview","solutions":"All","source":"Carbon Removal","link":"https://mitpress.mit.edu/9780262551366/carbon-removal/","type":"Book","level":2,"year":2026,"authors":"Howard Herzog and Niall MacDowell","description":"An overview of the science behind why CDR is necessary to meet climate goals, an overview of leading CDR approaches, and discussion on current policy and market frameworks"},{"topic":"Overview","solutions":"All","source":"CDR Primer","link":"https://cdrprimer.org","type":"Book","level":2,"year":2021,"authors":"Jen Wilcox, Ben Koloz, Jeremy Freeman, et al","description":"An overview of the science behind why CDR is necessary to meet climate goals, an overview of leading CDR approaches, a discussion on current policy and market frameworks, and discussion of social science behind scaling up removals"},{"topic":"Overview","solutions":"All","source":"Ending Fossil Fuels: Why Net Zero is Not Enough","link":"https://www.versobooks.com/products/2735-ending-fossil-fuels","type":"Book","level":1,"year":2021,"authors":"Holly Buck","description":"Exploration of how to think about removals beyond the conventional paradigm of net-zero and carbon markets"},{"topic":"Overview","solutions":"All","source":"State of CDR 2nd Edition","link":"#","type":"Report","level":2,"year":2024,"authors":"State of CDR","description":"Current status of CDR science and deployments"},{"topic":"Overview","solutions":"CCUS","source":"Global CCUS Status Report 2025","link":"https://www.globalccsinstitute.com/global-status-of-ccs/","type":"Report","level":1,"year":2025,"authors":"Global CCS Institute","description":"Current status of CCUS deployments and policy"},{"topic":"Science and innovation","solutions":"All","source":"A list of every CDR company in the world","link":"https://carbonbasedcommentary.substack.com/p/a-list-of-every-carbon-dioxide-removal","type":"Database","level":1,"year":2026,"authors":"Grant Faber","description":"Who is developing CDR solutions"},{"topic":"Science and innovation","solutions":"All","source":"GENIE - CDR Knowledge Hub","link":"https://cdr.apps.ece.iiasa.ac.at","type":"Database","level":5,"year":2026,"authors":"GENIE Project — IIASA","description":"Repository of scientific information related to removals"},{"topic":"Science and innovation","solutions":"All","source":"IPCC Assessment Report 6 Working Group 3","link":"https://www.ipcc.ch/report/ar6/wg3/","type":"Report","level":3,"year":2022,"authors":"IPCC","description":"Most comprehensive and authoritative source summarizing the research behind why CDR is necessary for meeting climate goals"},{"topic":"Science and innovation","solutions":"CCUS","source":"Carbon Capture","link":"#","type":"Textbook","level":5,"year":2012,"authors":"Jen Wilcox","description":"If you really want to know how carbon capture works, this is the place to start"},{"topic":"Science and innovation","solutions":"DAC","source":"Comparative review of Direct air capture technologies","link":"https://www.sciencedirect.com/science/article/pii/S1385894724008969","type":"Academic paper","level":5,"year":2024,"authors":"Houssam Bouaboula et al","description":"Technical comparison of different DAC approaches"},{"topic":"Science and innovation","solutions":"Durable","source":"Dataset on the adoption of historical technologies informs the scale-up of emerging CDR measures","link":"https://www.nature.com/articles/s43247-023-01056-1","type":"Academic paper","level":3,"year":2023,"authors":"Greg Nemet et al","description":"What it will take to scale technological CDR using historical analogs of other technology scale up efforts"},{"topic":"Science and innovation","solutions":"Durable","source":"The Applied Innovation Roadmap for CDR","link":"https://rmi.org/insight/the-applied-innovation-roadmap-for-cdr/","type":"Report","level":3,"year":2023,"authors":"RMI","description":"What R&D is needed to get a portfolio of solutions to 10+ Gt/year scale by 2050"},{"topic":"Science and innovation","solutions":"mCDR","source":"A Research Strategy for Ocean CDR and Sequestration","link":"https://www.nationalacademies.org/projects/DELS-OSB-20-02","type":"Report","level":4,"year":2019,"authors":"National Academies of Sciences","description":"Overview of mCDR approaches, and what research is needed to commercialize these solutions"},{"topic":"Science and innovation","solutions":"OAE","source":"A framework for techno-economic and lifecycle assessment in OAE","link":"#","type":"Academic paper","level":5,"year":2025,"authors":"Heriot Watt","description":"In-depth technoeconomics for OAE, as a model for how technoeconomics can be done for other CDR solutions"},{"topic":"Science and innovation","solutions":"OAE","source":"OAE Primer","link":"https://frontierclimate.com/assets/ocean-alkalinity-enhancement-primer.pdf","type":"White paper","level":2,"year":2025,"authors":"Frontier","description":"OAE 101, with links to additional sources for further reading"},{"topic":"Science and innovation","solutions":"Terrestrial","source":"Negative Emissions Technologies and Reliable Sequestration: A Research Agenda","link":"https://www.nationalacademies.org/projects/DELS-BASCPR-16-01","type":"Report","level":4,"year":2019,"authors":"National Academies of Sciences","description":"What R&D is needed to get a portfolio of solutions to Gt/year scale by 2050"},{"topic":"Policy","solutions":"All","source":"Carbon Capture Coalition Federal Policy Blueprint","link":"https://carboncapturecoalition.org/federal-policy-blueprint-2025/","type":"Report","level":1,"year":2025,"authors":"Carbon Capture Coalition","description":"US consensus position on federal policy changes to advance CCUS projects"},{"topic":"Policy","solutions":"All","source":"Carbon removal policy tracker","link":"https://carbon180.org/carbon-removal-policy-tracker/","type":"Database","level":1,"year":2025,"authors":"Carbon180","description":"Database of US federal policies related to removals"},{"topic":"Policy","solutions":"All","source":"Roads to Removals","link":"https://roads2removal.org","type":"Report","level":2,"year":2023,"authors":"Lawrence Livermore National Lab","description":"Spatially resolved exploration of carbon removal potential across the US"},{"topic":"Policy","solutions":"All","source":"US Department of Energy Carbon Removal Strategy","link":"#","type":"Report","level":2,"year":2025,"authors":"US Department of Energy","description":"What the Biden Administration was planning to do to advance carbon removal at the beginning of 2025"},{"topic":"Policy","solutions":"Durable","source":"Carbon Removal Alliance FY26 Appropriations Requests","link":"https://www.carbonremovalalliance.org/policy-work/fy26-appropriations-requests","type":"Report","level":1,"year":2025,"authors":"Carbon Removal Alliance","description":"What the US CDR industry thinks is possible for Congress to fund"},{"topic":"Policy","solutions":"Durable","source":"C-QuIP Database","link":"https://carbonremovalstandards.org/introducing-carbon-removal-quantification-integration-policy-database/","type":"Database","level":1,"year":2026,"authors":"Carbon Removal Standards Initiative","description":"Global policy database on embedded carbon removal"},{"topic":"Policy","solutions":"Durable","source":"Establishing Quality in Carbon Removal: A Roadmap for MMRV","link":"https://www.carbonremovalalliance.org/policy-work/establishing-quality-in-carbon-removal","type":"White paper","level":1,"year":2024,"authors":"Carbon Removal Alliance","description":"Overview of what it will take to advance MMRV"},{"topic":"Policy","solutions":"Durable","source":"What do we mean when we say we need to integrate CDR into industry?","link":"https://carbonremovalstandards.org/what-do-we-mean-when-we-say-we-need-to-integrate-cdr-into-industry/","type":"White paper","level":1,"year":2025,"authors":"Carbon Removal Standards Initiative","description":"Overview of what embedded CDR policy means"},{"topic":"Carbon markets","solutions":"All","source":"2026 State of the Voluntary Carbon Markets","link":"https://www.carbon-direct.com/voluntary-carbon-market/2026","type":"Report","level":1,"year":2026,"authors":"Carbon Direct","description":"What is the voluntary carbon market, and how does it relate to removals?"},{"topic":"Carbon markets","solutions":"All","source":"Article 6 of the Paris Agreement: A Practical Primer","link":"https://www.carbon-direct.com/research-and-reports/article-6-of-the-paris-agreement-a-practical-primer","type":"White paper","level":1,"year":2026,"authors":"Carbon Direct","description":"What is Article 6, and how does it related to removals?"},{"topic":"Carbon markets","solutions":"All","source":"CDR 2.0: Five Pillars of Successful Project Deployment","link":"#","type":"White paper","level":1,"year":2026,"authors":"Carbon Direct","description":"What will it take for CDR suppliers to scale in the near future?"},{"topic":"Carbon markets","solutions":"All","source":"CDR.FYI","link":"https://www.cdr.fyi","type":"Website","level":1,"year":2026,"authors":"CDR.FYI","description":"Who is buying CDR credits? Who is selling CDR credits?"},{"topic":"Carbon markets","solutions":"All","source":"Criteria for high quality carbon removal","link":"https://www.carbon-direct.com/criteria/2025-edition","type":"White paper","level":1,"year":2025,"authors":"Microsoft and Carbon Direct","description":"What does high-quality carbon removal purchasing look like?"},{"topic":"Carbon markets","solutions":"All","source":"Frontier CDR credit purchase offtake template","link":"https://frontierclimate.com/writing/offtake-agreement-template","type":"White paper","level":2,"year":2024,"authors":"Frontier","description":"How can a purchaser write a good CDR offtake contract?"},{"topic":"Carbon markets","solutions":"All","source":"The CDR Buyer's Guide","link":"https://www.cdr.fyi/resources/buyers-guide/","type":"White paper","level":1,"year":2026,"authors":"CDR.FYI","description":"How can an interested CDR purchaser get started with buying credits?"},{"topic":"Carbon markets","solutions":"All","source":"The Open Standard Carbon Removal Agreement","link":"https://www.cdr.fyi/resources/oscar","type":"White paper","level":2,"year":2026,"authors":"CDR.FYI","description":"How can a purchaser write a good CDR offtake contract?"},{"topic":"Carbon markets","solutions":"All","source":"World Bank State and Trends of Carbon Pricing","link":"https://www.worldbank.org/en/publication/state-and-trends-of-carbon-pricing","type":"Report","level":1,"year":2025,"authors":"World Bank","description":"Overview of the state of compliance carbon pricing mechanisms globally"},{"topic":"Carbon markets","solutions":"Biomass","source":"Frontier Biomass Sourcing Principles","link":"#","type":"White paper","level":2,"year":2024,"authors":"Frontier","description":"How to ensure biomass CDR projects deliver removals and avoid negative unintended consequences"},{"topic":"Carbon markets","solutions":"Durable","source":"Absolute Climate draft standard","link":"https://docs.absoluteclimate.com","type":"Technical document","level":5,"year":2026,"authors":"Absolute Climate","description":"Frontier of the MMRV conversation for removals"},{"topic":"Carbon markets","solutions":"Durable","source":"CDR Clean Energy Purchasing Principles","link":"#","type":"White paper","level":2,"year":2025,"authors":"Frontier","description":"How to source clean energy for CDR in ways that balance carbon removal and innovation"},{"topic":"Carbon markets","solutions":"Durable","source":"Primer on Carbon Dioxide Removal Credits","link":"#","type":"Report","level":2,"year":2024,"authors":"US Department of Energy","description":"Introduction to CDR credit markets"},{"topic":"Community benefits","solutions":"All","source":"Removing Forward: Centering Equity and Justice in a Carbon-Removing Future","link":"https://carbon180.org/wp-content/uploads/2024/01/Carbon180-RemovingForward.pdf","type":"White paper","level":1,"year":2021,"authors":"Carbon180","description":"Overview of carbon removal and environmental justice"},{"topic":"Community benefits","solutions":"All","source":"The politics of negative emissions technologies and decarbonization in rural communities","link":"#","type":"Academic paper","level":2,"year":2018,"authors":"Holly Buck","description":"Academic survey of politics of removal at local level"},{"topic":"Community benefits","solutions":"Durable","source":"Frontier community benefit plan template","link":"#","type":"White paper","level":1,"year":2023,"authors":"Frontier","description":"How to incorporate community benefits into project development and CDR offtakes"},{"topic":"Investment","solutions":"All","source":"Climatetech investment trends 2025","link":"#","type":"Report","level":1,"year":2026,"authors":"Sightline Climate","description":"How carbon removal fits into broader cleantech investment trends"}];
 
@@ -63,6 +64,80 @@ function TypeTag({ type }) {
   );
 }
 
+function FilterDropdown({ label, value, options, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const filtered = options.filter(o => o.toLowerCase().includes(query.toLowerCase()));
+
+  return (
+    <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
+      <button onClick={() => { setOpen(!open); setQuery(""); }} className="pill" style={{
+        padding: "7px 16px", borderRadius: 100, border: "none",
+        background: value !== "All" ? "#1a1a1a" : "transparent",
+        color: value !== "All" ? "#faf8f4" : "#7a7668",
+        fontSize: 13, fontFamily: "'DM Sans', sans-serif",
+        cursor: "pointer", fontWeight: value !== "All" ? 600 : 400,
+        outline: value !== "All" ? "none" : "1px solid #d4d0c8",
+        display: "inline-flex", alignItems: "center", gap: 6,
+      }}>
+        {value === "All" ? label : value}
+        <span style={{ fontSize: 10, opacity: 0.6 }}>{open ? "\u25B2" : "\u25BC"}</span>
+      </button>
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 200,
+          background: "#fff", border: "1px solid #e4e0d7", borderRadius: 12,
+          boxShadow: "0 8px 32px rgba(0,0,0,0.1)", minWidth: 200, maxHeight: 280,
+          display: "flex", flexDirection: "column", overflow: "hidden",
+        }}>
+          <div style={{ padding: "8px 10px", borderBottom: "1px solid #f0ede6" }}>
+            <input
+              autoFocus
+              type="text" placeholder={`Filter ${label.toLowerCase()}...`}
+              value={query} onChange={e => setQuery(e.target.value)}
+              style={{
+                width: "100%", padding: "8px 10px", borderRadius: 8,
+                border: "1px solid #e4e0d7", fontSize: 13,
+                fontFamily: "'DM Sans', sans-serif", color: "#2a2822",
+                outline: "none", boxSizing: "border-box",
+              }}
+            />
+          </div>
+          <div style={{ overflowY: "auto", maxHeight: 220 }}>
+            <button onClick={() => { onChange("All"); setOpen(false); }} style={{
+              display: "block", width: "100%", padding: "9px 16px", border: "none",
+              background: value === "All" ? "#f5f3ee" : "transparent",
+              textAlign: "left", cursor: "pointer", fontSize: 13,
+              fontFamily: "'DM Sans', sans-serif", color: "#2a2822",
+              fontWeight: value === "All" ? 600 : 400,
+            }}>All</button>
+            {filtered.map(o => (
+              <button key={o} onClick={() => { onChange(o); setOpen(false); }} style={{
+                display: "block", width: "100%", padding: "9px 16px", border: "none",
+                background: value === o ? "#f5f3ee" : "transparent",
+                textAlign: "left", cursor: "pointer", fontSize: 13,
+                fontFamily: "'DM Sans', sans-serif", color: "#2a2822",
+                fontWeight: value === o ? 600 : 400,
+              }}>{o}</button>
+            ))}
+            {filtered.length === 0 && (
+              <div style={{ padding: "12px 16px", color: "#a09e94", fontSize: 13 }}>No matches</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function App() {
   const [page, setPage] = useState("about");
   const [topicFilter, setTopicFilter] = useState("All");
@@ -71,7 +146,13 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [companyCategoryFilter, setCompanyCategoryFilter] = useState("All");
+  const [companyCountryFilter, setCompanyCountryFilter] = useState("All");
+  const [companyTechFilter, setCompanyTechFilter] = useState("All");
+  const [companyDisplayCount, setCompanyDisplayCount] = useState(50);
   useEffect(() => { setMounted(true); }, []);
+  const { companies, loading: companiesLoading, error: companiesError } = useCompanyData();
+  const companyCountries = [...new Set(companies.map(c => c.country).filter(Boolean))].sort();
 
   const filteredPubs = PUBLICATIONS.filter(p =>
     (topicFilter === "All" || p.topic === topicFilter) &&
@@ -91,6 +172,7 @@ export default function App() {
     { key: "publications", label: "Publications" },
     { key: "organizations", label: "Organizations" },
     { key: "roadmaps", label: "Roadmaps" },
+    { key: "companies", label: "Companies" },
   ];
 
   const navigate = (key) => {
@@ -208,7 +290,7 @@ export default function App() {
                   A curated guide to carbon removal.
                 </h1>
                 <p className="hero-subtitle">
-                  The publications, organizations, and regional roadmaps you need to understand carbon dioxide removal — from beginner overviews to advanced research.
+                  The publications, organizations, companies, and regional roadmaps you need to understand carbon dioxide removal — from beginner overviews to advanced research.
                 </p>
                 <div className="hero-buttons">
                   <button onClick={() => navigate("publications")} className="btn-primary">
@@ -227,6 +309,7 @@ export default function App() {
                 { n: "40+", label: "Publications", sub: "books, reports & more" },
                 { n: "58", label: "Organizations", sub: "across 5 categories" },
                 { n: "8", label: "Roadmaps", sub: "regional strategies" },
+                { n: companiesLoading ? "..." : String(companies.length) + "+", label: "Companies", sub: "live from Google Sheets" },
                 { n: "6", label: "Topics", sub: "policy to investment" },
               ].map((s, i) => (
                 <div key={i} className="stat-card">
@@ -448,6 +531,114 @@ export default function App() {
             </div>
           </div>
         )}
+        {/* ===== COMPANIES ===== */}
+        {page === "companies" && (() => {
+          const companyTechOptions = [...new Set(
+            companies
+              .filter(c => companyCategoryFilter === "All" || c.category === companyCategoryFilter)
+              .map(c => c.type).filter(Boolean)
+          )].sort();
+          const filteredCompanies = companies.filter(c =>
+            (companyCategoryFilter === "All" || c.category === companyCategoryFilter) &&
+            (companyCountryFilter === "All" || c.country === companyCountryFilter) &&
+            (companyTechFilter === "All" || c.type === companyTechFilter) &&
+            (searchQuery === "" || c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.type.toLowerCase().includes(searchQuery.toLowerCase()) || c.country.toLowerCase().includes(searchQuery.toLowerCase()))
+          );
+          return (
+          <div style={{ animation: "fadeUp 0.4s ease both" }}>
+            <div style={{ paddingTop: 40, marginBottom: 24 }}>
+              <h1 className="page-title">Companies</h1>
+              <p style={{ color: "#8a8577", fontSize: 15, marginTop: 8 }}>
+                {companiesLoading ? "Loading..." : <>{filteredCompanies.length} CDR companies — live from <a href="https://docs.google.com/spreadsheets/d/104OliKY8JZg0lINDsZ02JD41SZD2WGz8gra89fuXrKY" target="_blank" rel="noopener noreferrer" style={{ color: "#3b6b1e", textDecoration: "none", fontWeight: 600 }}>Grant Faber's CDR Company List</a>.</>}
+              </p>
+            </div>
+
+            {companiesError && (
+              <div style={{ padding: 24, background: "#fef3f2", border: "1px solid #fecaca", borderRadius: 12, color: "#991b1b", fontSize: 14, marginBottom: 24 }}>
+                Could not load company data. Please try refreshing the page.
+              </div>
+            )}
+
+            {!companiesError && (
+              <>
+                <div style={{ marginBottom: 16 }}>
+                  <input
+                    type="text" placeholder="Search by company, country, or technology..."
+                    value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                    className="search-input"
+                  />
+                </div>
+
+                <div className="filter-row">
+                  <span className="filter-label">Category</span>
+                  {CATEGORIES.map(c => (
+                    <Pill key={c} active={companyCategoryFilter === c} onClick={() => { setCompanyCategoryFilter(c); setCompanyTechFilter("All"); setCompanyDisplayCount(50); }}>
+                      {c === "All" ? `All (${companies.length})` : c}
+                    </Pill>
+                  ))}
+                </div>
+                <div className="filter-row">
+                  <span className="filter-label">Technology</span>
+                  <FilterDropdown label="Technology" value={companyTechFilter} options={companyTechOptions} onChange={setCompanyTechFilter} />
+                </div>
+                <div className="filter-row" style={{ marginBottom: 28 }}>
+                  <span className="filter-label">Country</span>
+                  <FilterDropdown label="Country" value={companyCountryFilter} options={companyCountries} onChange={setCompanyCountryFilter} />
+                </div>
+
+                {companiesLoading ? (
+                  <div style={{ padding: 60, textAlign: "center", color: "#a09e94" }}>
+                    <div className="spinner" />
+                    <div style={{ marginTop: 14, fontSize: 14, color: "#8a8577" }}>Fetching the latest CDR company data...</div>
+                  </div>
+                ) : (
+                  <>
+                  <div className="companies-grid">
+                    {filteredCompanies.slice(0, companyDisplayCount).map((c, i) => (
+                      <a href={c.url} target="_blank" rel="noopener noreferrer" key={i} className="org-card">
+                        <div>
+                          <div style={{
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            fontSize: 15, fontWeight: 600, color: "#1a1a1a", marginBottom: 10,
+                          }}>{c.name}</div>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            <span style={{ fontSize: 11, background: "#e8f0e2", padding: "3px 10px", borderRadius: 6, color: "#3b6b1e", fontWeight: 500 }}>{c.category}</span>
+                            <span style={{ fontSize: 11, background: "#f0ede6", padding: "3px 10px", borderRadius: 6, color: "#6a6658" }}>{c.type}</span>
+                            {c.country && <span style={{ fontSize: 11, background: "#f0ede6", padding: "3px 10px", borderRadius: 6, color: "#6a6658" }}>{c.country}</span>}
+                          </div>
+                        </div>
+                        <span style={{ color: "#c4c0b8", fontSize: 18, marginTop: 2, flexShrink: 0 }}>↗</span>
+                      </a>
+                    ))}
+                  </div>
+                  {filteredCompanies.length > companyDisplayCount && (
+                    <div style={{ textAlign: "center", marginTop: 24 }}>
+                      <button className="show-more-btn" onClick={() => setCompanyDisplayCount(prev => prev + 50)} style={{
+                        padding: "14px 36px", background: "#fff", color: "#1a1a1a",
+                        border: "1px solid #e4e0d7", borderRadius: 100, fontSize: 14,
+                        fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+                        cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8,
+                      }}>
+                        Show more companies
+                        <span style={{ fontSize: 12, color: "#a09e94", fontWeight: 400 }}>
+                          ({companyDisplayCount} of {filteredCompanies.length})
+                        </span>
+                      </button>
+                    </div>
+                  )}
+                  </>
+                )}
+                {!companiesLoading && filteredCompanies.length === 0 && (
+                  <div style={{ padding: "60px 20px", textAlign: "center", color: "#a09e94" }}>
+                    <div style={{ fontSize: 16, fontWeight: 500, color: "#6a6658", marginBottom: 4 }}>No matching companies</div>
+                    <div style={{ fontSize: 14 }}>Try adjusting your filters or search terms.</div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+          );
+        })()}
       </main>
 
       {/* FOOTER */}
@@ -474,6 +665,21 @@ export default function App() {
         }
         button:focus:not(:focus-visible), a:focus:not(:focus-visible) {
           outline: none;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        .spinner {
+          display: inline-block; width: 24px; height: 24px;
+          border: 2.5px solid #e4e0d7; border-top-color: #3b6b1e;
+          border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        .companies-grid {
+          display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+        }
+        .show-more-btn:hover {
+          border-color: #3b6b1e !important; color: #3b6b1e !important;
         }
 
         @keyframes fadeUp {
@@ -531,7 +737,7 @@ export default function App() {
 
         /* STATS */
         .stats-grid {
-          display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px;
+          display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 24px;
         }
         .stat-card {
           background: #fff; border-radius: 16px; padding: 28px 24px;
@@ -647,6 +853,7 @@ export default function App() {
           .stats-grid { grid-template-columns: repeat(2, 1fr); }
           .modules-grid { grid-template-columns: repeat(2, 1fr); }
           .orgs-grid { grid-template-columns: 1fr; }
+          .companies-grid { grid-template-columns: 1fr; }
           .hero { padding: 56px 40px; }
           .hero-title { font-size: 44px; }
         }
