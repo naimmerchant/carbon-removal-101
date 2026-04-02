@@ -267,6 +267,39 @@ export default function App() {
                 ))}
               </div>
             </div>
+
+            {/* Credits */}
+            <section style={{ marginTop: 72, textAlign: "center", paddingBottom: 20 }}>
+              <div style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 32, fontWeight: 700,
+                color: "#1a1a1a", letterSpacing: "-0.02em",
+              }}>
+                Created by Noah Deich
+              </div>
+              <div style={{ fontSize: 14, color: "#a09e94", marginTop: 24, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
+                Contributors
+              </div>
+              <div style={{ display: "flex", justifyContent: "center", gap: 32, marginTop: 16, flexWrap: "wrap" }}>
+                {[
+                  { name: "Na'im Merchant", url: "https://www.linkedin.com/in/naimmerchant/" },
+                  { name: "Grant Faber", url: "https://www.linkedin.com/in/grantfaber/" },
+                ].map(person => (
+                  <a key={person.name} href={person.url} target="_blank" rel="noopener noreferrer" style={{
+                    display: "inline-flex", alignItems: "center", gap: 8,
+                    fontSize: 16, fontWeight: 500, color: "#2a2822", textDecoration: "none",
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = "#3b6b1e"}
+                  onMouseLeave={e => e.currentTarget.style.color = "#2a2822"}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    {person.name}
+                  </a>
+                ))}
+              </div>
+            </section>
           </div>
         )}
 
