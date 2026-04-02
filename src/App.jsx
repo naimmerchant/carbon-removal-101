@@ -274,7 +274,13 @@ export default function App() {
                 fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 20, fontWeight: 700,
                 color: "#1a1a1a", letterSpacing: "-0.01em",
               }}>
-                Created by Noah Deich
+                Created by{" "}
+                <a href="https://www.linkedin.com/in/noahdeich/" target="_blank" rel="noopener noreferrer" style={{
+                  color: "inherit", textDecoration: "none", transition: "color 0.2s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = "#3b6b1e"}
+                onMouseLeave={e => e.currentTarget.style.color = "#1a1a1a"}
+                >Noah Deich</a>
               </div>
               <div style={{ fontSize: 13, color: "#a09e94", marginTop: 20, fontWeight: 500 }}>
                 Contributors
