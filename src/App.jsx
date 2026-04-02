@@ -308,9 +308,8 @@ export default function App() {
               {[
                 { n: "40+", label: "Publications", sub: "books, reports & more" },
                 { n: "58", label: "Organizations", sub: "across 5 categories" },
+                { n: "600+", label: "Companies", sub: "from around the world" },
                 { n: "8", label: "Roadmaps", sub: "regional strategies" },
-                { n: companiesLoading ? "..." : String(companies.length) + "+", label: "Companies", sub: "live from Google Sheets" },
-                { n: "6", label: "Topics", sub: "policy to investment" },
               ].map((s, i) => (
                 <div key={i} className="stat-card">
                   <div style={{
@@ -737,7 +736,7 @@ export default function App() {
 
         /* STATS */
         .stats-grid {
-          display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 24px;
+          display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px;
         }
         .stat-card {
           background: #fff; border-radius: 16px; padding: 28px 24px;
